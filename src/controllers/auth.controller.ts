@@ -11,9 +11,6 @@ export const registerUser = async (req: Request, res: Response) => {
   const User = new UserModel()
   const user: UserCol = req.body
 
-  const salt = bcrypt.genSaltSync(10)
-  user.password = bcrypt.hashSync(String(user.password), salt)
-
   const checkUser = await User.selectOne(undefined, req.body.email)
 
   if (checkUser.length) return res.status(400).json({ massage: 'exist before' })
@@ -22,6 +19,7 @@ export const registerUser = async (req: Request, res: Response) => {
   const userData = await User.selectOne(undefined, String(user.email))
 
   const responseData = {
+    id: user.id,
     full_name: `${user.first_name} ${user.last_name}`,
     first_name: user.first_name,
     last_name: user.last_name,
@@ -49,6 +47,7 @@ export const loginUser = async (req: Request, res: Response) => {
   res.header('x-auth-token', token)
 
   const responseData = {
+    id: checkedUser.id,
     full_name: `${checkedUser.first_name} ${checkedUser.last_name}`,
     email: checkedUser.email,
     phone: checkedUser.phone

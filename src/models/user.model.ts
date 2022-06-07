@@ -1,4 +1,5 @@
 import db from '../config/db.config'
+import bcrypt from 'bcrypt'
 
 export type UserCol = {
   id?: number
@@ -45,6 +46,9 @@ export default class User {
    */
   async insertUser(user: UserCol): Promise<UserCol[]> {
     try {
+      const salt = bcrypt.genSaltSync(10)
+      user.password = bcrypt.hashSync(String(user.password), salt)
+
       const conn = await db.connect()
       const sql = `INSERT INTO users (first_name, last_name, email, phone, password) 
       VALUES ('${user.first_name}', '${user.last_name}', '${user.email}', '${user.phone}', '${user.password}')`
@@ -53,24 +57,6 @@ export default class User {
       return result.rows
     } catch (error) {
       throw new Error(`Connot insert user ${error}`)
-    }
-  }
-
-  /**
-   *
-   * @param user
-   * @returns
-   */
-  async updatetUser(user: UserCol): Promise<UserCol[]> {
-    try {
-      const conn = await db.connect()
-      const sql = `INSERT INTO users (first_name, last_name, email, phone, password) 
-      VALUES ('${user.first_name}', '${user.last_name}', '${user.email}', '${user.phone}', '${user.password}')`
-      const result = await conn.query(sql)
-      conn.release()
-      return result.rows
-    } catch (error) {
-      throw new Error(`Connot update users: ${error}`)
     }
   }
 

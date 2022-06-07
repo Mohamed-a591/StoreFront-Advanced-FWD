@@ -7,6 +7,6 @@ export const UserMiddleWare = (req: Request, res: Response, nxt: NextFunction) =
     req.body.valid = 1
     nxt()
   } else {
-    res.status(403).json(validator.errors)
+    res.status(400).json(validator.errors)
   }
 }

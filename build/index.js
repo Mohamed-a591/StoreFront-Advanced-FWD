@@ -24,24 +24,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var morgan_1 = __importDefault(require("morgan"));
+var body_parser_1 = __importDefault(require("body-parser"));
 var dotenv = __importStar(require("dotenv"));
 var user_route_1 = __importDefault(require("./routes/user.route"));
 var product_route_1 = __importDefault(require("./routes/product.route"));
 var order_route_1 = __importDefault(require("./routes/order.route"));
 var index_route_1 = __importDefault(require("./routes/index.route"));
+var auth_route_1 = __importDefault(require("./routes/auth.route"));
+var auth_middleware_1 = require("./middlewares/auth.middleware");
 dotenv.config();
 var PORT = process.env.PORT || 3000;
 // create an instance server
 var app = (0, express_1.default)();
 // HTTP request logger middleware
-app.use((0, morgan_1.default)('short'));
+app.use((0, morgan_1.default)('dev'));
+// app.use(morgan('short'))
+app.use(body_parser_1.default.json());
+app.use(body_parser_1.default.urlencoded({ extended: true }));
 // Use routes
 app.use('/', index_route_1.default);
-app.use('/users', user_route_1.default);
-app.use('/products', product_route_1.default);
-app.use('/orders', order_route_1.default);
+app.use('/api', auth_route_1.default);
+app.use(auth_middleware_1.permission);
+app.use('/api/users', user_route_1.default);
+app.use('/api/products', product_route_1.default);
+app.use('/api/orders', order_route_1.default);
 // start express server
 app.listen(PORT, function () {
-    console.log("Server is starting at prot:".concat(PORT));
+    console.log("Server is running at http://localhost:".concat(PORT));
 });
 exports.default = app;

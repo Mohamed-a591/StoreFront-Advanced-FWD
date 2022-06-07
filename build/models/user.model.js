@@ -40,6 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var db_config_1 = __importDefault(require("../config/db.config"));
+var bcrypt_1 = __importDefault(require("bcrypt"));
 var User = /** @class */ (function () {
     function User() {
     }
@@ -70,7 +71,7 @@ var User = /** @class */ (function () {
             });
         });
     };
-    User.prototype.selectOne = function (user_id) {
+    User.prototype.selectOne = function (user_id, email) {
         return __awaiter(this, void 0, void 0, function () {
             var conn, sql, result, error_2;
             return __generator(this, function (_a) {
@@ -80,15 +81,15 @@ var User = /** @class */ (function () {
                         return [4 /*yield*/, db_config_1.default.connect()];
                     case 1:
                         conn = _a.sent();
-                        sql = "SELECT * FROM users WHERE id= ".concat(user_id);
+                        sql = "SELECT * FROM users WHERE id=".concat(user_id ? user_id : null, " OR email = '").concat(email ? email : null, "';");
                         return [4 /*yield*/, conn.query(sql)];
                     case 2:
                         result = _a.sent();
                         conn.release();
-                        return [2 /*return*/, result.rows[0]];
+                        return [2 /*return*/, result.rows];
                     case 3:
                         error_2 = _a.sent();
-                        throw new Error("Connot get user ".concat(error_2));
+                        throw new Error("Connot get userssssss ".concat(error_2));
                     case 4: return [2 /*return*/];
                 }
             });
@@ -100,11 +101,13 @@ var User = /** @class */ (function () {
      */
     User.prototype.insertUser = function (user) {
         return __awaiter(this, void 0, void 0, function () {
-            var conn, sql, result, error_3;
+            var salt, conn, sql, result, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
+                        salt = bcrypt_1.default.genSaltSync(10);
+                        user.password = bcrypt_1.default.hashSync(String(user.password), salt);
                         return [4 /*yield*/, db_config_1.default.connect()];
                     case 1:
                         conn = _a.sent();
@@ -124,41 +127,12 @@ var User = /** @class */ (function () {
     };
     /**
      *
-     * @param user
-     * @returns
-     */
-    User.prototype.updatetUser = function (user) {
-        return __awaiter(this, void 0, void 0, function () {
-            var conn, sql, result, error_4;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, db_config_1.default.connect()];
-                    case 1:
-                        conn = _a.sent();
-                        sql = "INSERT INTO users (first_name, last_name, email, phone, password) \n      VALUES ('".concat(user.first_name, "', '").concat(user.last_name, "', '").concat(user.email, "', '").concat(user.phone, "', '").concat(user.password, "')");
-                        return [4 /*yield*/, conn.query(sql)];
-                    case 2:
-                        result = _a.sent();
-                        conn.release();
-                        return [2 /*return*/, result.rows];
-                    case 3:
-                        error_4 = _a.sent();
-                        throw new Error("Connot update users: ".concat(error_4));
-                    case 4: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    /**
-     *
      * @param user_id
      * @returns
      */
     User.prototype.deleteUser = function (user_id) {
         return __awaiter(this, void 0, void 0, function () {
-            var conn, sql, result, error_5;
+            var conn, sql, result, error_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -173,8 +147,8 @@ var User = /** @class */ (function () {
                         conn.release();
                         return [2 /*return*/, result.rows];
                     case 3:
-                        error_5 = _a.sent();
-                        throw new Error("Connot delete user ".concat(error_5));
+                        error_4 = _a.sent();
+                        throw new Error("Connot delete user ".concat(error_4));
                     case 4: return [2 /*return*/];
                 }
             });

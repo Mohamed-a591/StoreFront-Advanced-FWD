@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -39,7 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.addUser = exports.getUser = exports.getUsers = void 0;
+exports.deleteUser = exports.getUser = exports.getUsers = void 0;
 var user_model_1 = __importDefault(require("../models/user.model"));
 var response_module_1 = require("../modules/response.module");
 var getUsers = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -51,7 +62,7 @@ var getUsers = function (_req, res) { return __awaiter(void 0, void 0, void 0, f
                 return [4 /*yield*/, User.index()];
             case 1:
                 users = _a.sent();
-                res.json((0, response_module_1.handelResponse)(users));
+                res.json((0, response_module_1.handelResponse)(users.length ? users : 'not found 🤷‍♂️'));
                 return [2 /*return*/];
         }
     });
@@ -63,43 +74,35 @@ var getUser = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
         switch (_a.label) {
             case 0:
                 User = new user_model_1.default();
-                return [4 /*yield*/, User.selectOne(Number(req.params.id))];
+                return [4 /*yield*/, User.selectOne(req.body.user_id)];
             case 1:
                 user = _a.sent();
-                res.json((0, response_module_1.handelResponse)(user ? user : 'not found 🤷‍♂️'));
+                res.json((0, response_module_1.handelResponse)(user.length ? user : 'not found 🤷‍♂️', 'User not exist'));
                 return [2 /*return*/];
         }
     });
 }); };
 exports.getUser = getUser;
-var addUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        return [2 /*return*/, res.send('hello')
-            // const user: UserCol = {
-            //   first_name: 'lol',
-            //   last_name: 'hello',
-            //   email: 'new@new.com',
-            //   phone: '000000000',
-            //   password: 'lolololol'
-            // }
-            // await User.insertUser(user)
-            // res.json(handelResponse(user, 'User add successfuly 👌'))
-        ];
-    });
-}); };
-exports.addUser = addUser;
 var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var User, user_id;
+    var User, user_id, user;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 User = new user_model_1.default();
-                user_id = 3;
-                return [4 /*yield*/, User.deleteUser(user_id)];
+                user_id = req.body.user_id;
+                return [4 /*yield*/, User.selectOne(user_id)];
             case 1:
+                user = _a.sent();
+                if (!user.length) return [3 /*break*/, 3];
+                return [4 /*yield*/, User.deleteUser(user_id)];
+            case 2:
                 _a.sent();
-                res.json((0, response_module_1.handelResponse)({ user_id: user_id }, 'User deleted successfuly 👌'));
-                return [2 /*return*/];
+                res.json((0, response_module_1.handelResponse)(__assign({}, user[0]), 'User deleted successfuly 👌'));
+                return [3 /*break*/, 4];
+            case 3:
+                res.json((0, response_module_1.handelResponse)('not found 🤷‍♂️', 'User not found'));
+                _a.label = 4;
+            case 4: return [2 /*return*/];
         }
     });
 }); };

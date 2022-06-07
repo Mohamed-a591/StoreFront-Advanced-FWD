@@ -1,12 +1,11 @@
 import { Request, Response } from 'express'
-import bcrypt from 'bcrypt'
-import UserModel, { UserCol } from '../models/user.model'
+import UserModel from '../models/user.model'
 import { handelResponse } from '../modules/response.module'
 
 export const getUsers = async (_req: Request, res: Response) => {
   const User = new UserModel()
   const users = await User.index()
-  res.json(handelResponse(users.length ? users : 'not found 🤷‍♂️', 'No users exist'))
+  res.json(handelResponse(users.length ? users : 'not found 🤷‍♂️'))
 }
 
 export const getUser = async (req: Request, res: Response) => {
