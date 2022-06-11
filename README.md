@@ -8,6 +8,8 @@ Email: **mohamed.abdelsamie3009@gmail.com**
 
 This repo contains a basic Node and Express app to get you started in constructing an API. To get started, clone this repo and run `npm` in your terminal at the project root.
 
+The app is a simple store Restful Api to manage orders, products, and users.
+
 ### Main technologies used at the project
 - Express - Nodejs
 - Jasmine for unit testing
@@ -18,6 +20,24 @@ This repo contains a basic Node and Express app to get you started in constructi
 - AJV for request validation
 - Eslint
 - Prettierr
+
+## .Env Variables and running information 
+There is an `.exaple.env` file to make your configuration
+
+DB configration
+``` .env
+DB_DRIVER=pg
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=store_front
+DB_USERNAME=postgres
+DB_PASSWORD=****
+```
+
+Running port
+```
+PORT= 5000
+```
 
 ## Requirements To Run The Project
 

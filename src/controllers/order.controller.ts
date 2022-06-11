@@ -8,15 +8,23 @@ const Cart = new CartModel()
 
 export const getOrders = async (req: Request, res: Response) => {
   // return res.json(req.body.jwt_payload.userid)
-  const orders = await Order.index(Number(req.body.jwt_payload.userid))
-  res.json(handelResponse(orders.length ? orders : 'No orders found 🤷‍♂️'))
+  try {
+    const orders = await Order.index(Number(req.body.jwt_payload.userid))
+    res.json(handelResponse(orders.length ? orders : 'No orders found 🤷‍♂️'))
+  } catch (error) {
+    throw new Error(`Get orders: ${error}`)
+  }
 }
 
 export const getOrdersByUserId = async (req: Request, res: Response) => {
-  const user_id: number = req.body.jwt_payload.userid
-  if (!user_id) return res.json(handelResponse([], 'user not valid'))
-  const orders = await Order.selectByUserId(user_id, req.body.order_id)
-  res.json(handelResponse(orders.length ? orders : 'No orders found 🤷‍♂️'))
+  try {
+    const user_id: number = req.body.jwt_payload.userid
+    if (!user_id) return res.json(handelResponse([], 'user not valid'))
+    const orders = await Order.selectByUserId(user_id, req.body.order_id)
+    res.json(handelResponse(orders.length ? orders : 'No orders found 🤷‍♂️'))
+  } catch (error) {
+    throw new Error(`${error}`)
+  }
 }
 
 export const addOrder = async (req: Request, res: Response) => {
