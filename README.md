@@ -45,6 +45,11 @@ Your enviroment must setup with:
 
 - posrgreSQL databases called `store_front` for dev enviroment and `test_store_front` for test enviroment
 
+To migrate the tables at the DB
+``` bash
+db-migrate up
+```
+
 ## Steps to Deal wiht project
 
 After download the project run
