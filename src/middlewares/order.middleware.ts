@@ -1,16 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
-import jwt from 'jsonwebtoken'
 import validator from '../utils/order.validator'
 
 export const OrderMiddleWare = (req: Request, res: Response, nxt: NextFunction) => {
-  const token = req.header('x-auth-token')
   try {
-    /**
-     * Get user id from token
-     */
-    // const decodePayload = jwt.decode(String(token))
-    // req.body.jwt_payload = decodePayload
-
     /**
      * Validate req data
      */

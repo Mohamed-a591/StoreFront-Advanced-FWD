@@ -40,14 +40,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addOrder = exports.getOrdersByUserId = exports.getOrders = void 0;
+var cart_model_1 = __importDefault(require("../models/cart.model"));
 var order_model_1 = __importDefault(require("../models/order.model"));
 var response_module_1 = require("../modules/response.module");
 var Order = new order_model_1.default();
-var getOrders = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+var Cart = new cart_model_1.default();
+var getOrders = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var orders;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, Order.index()];
+            case 0: return [4 /*yield*/, Order.index(Number(req.body.jwt_payload.userid))];
             case 1:
                 orders = _a.sent();
                 res.json((0, response_module_1.handelResponse)(orders.length ? orders : 'No orders found 🤷‍♂️'));
@@ -64,7 +66,7 @@ var getOrdersByUserId = function (req, res) { return __awaiter(void 0, void 0, v
                 user_id = req.body.jwt_payload.userid;
                 if (!user_id)
                     return [2 /*return*/, res.json((0, response_module_1.handelResponse)([], 'user not valid'))];
-                return [4 /*yield*/, Order.selectByUserId(user_id)];
+                return [4 /*yield*/, Order.selectByUserId(user_id, req.body.order_id)];
             case 1:
                 orders = _a.sent();
                 res.json((0, response_module_1.handelResponse)(orders.length ? orders : 'No orders found 🤷‍♂️'));
@@ -74,22 +76,45 @@ var getOrdersByUserId = function (req, res) { return __awaiter(void 0, void 0, v
 }); };
 exports.getOrdersByUserId = getOrdersByUserId;
 var addOrder = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var orderData;
+    var orderData, products, order_id, i, row, cart, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 orderData = {
                     user_id: req.body.jwt_payload.userid,
-                    products_id: req.body.products_id,
                     status: req.body.status
                 };
-                return [4 /*yield*/, Order.create(orderData)];
+                products = req.body.products;
+                _a.label = 1;
             case 1:
-                _a.sent();
-                if (!req.body.valid)
-                    return [2 /*return*/, res.json((0, response_module_1.handelResponse)([], 'invalide response', 400))];
+                _a.trys.push([1, 7, , 8]);
+                return [4 /*yield*/, Order.create(orderData)];
+            case 2:
+                order_id = _a.sent();
+                i = 0;
+                _a.label = 3;
+            case 3:
+                if (!(i < products.length)) return [3 /*break*/, 6];
+                row = {
+                    order_id: Number(order_id[0].id),
+                    product_id: products[i].id,
+                    qty: products[i].qty
+                };
+                return [4 /*yield*/, Cart.insert(row)];
+            case 4:
+                cart = _a.sent();
+                _a.label = 5;
+            case 5:
+                i++;
+                return [3 /*break*/, 3];
+            case 6:
+                // if (!req.body.valid) return res.json(handelResponse([], 'invalide response', 400))
                 res.json((0, response_module_1.handelResponse)(orderData, 'Product added successfuly', 200));
-                return [2 /*return*/];
+                return [3 /*break*/, 8];
+            case 7:
+                error_1 = _a.sent();
+                throw Error("Add order erro: ".concat(error_1));
+            case 8: return [2 /*return*/];
         }
     });
 }); };

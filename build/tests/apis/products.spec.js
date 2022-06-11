@@ -116,8 +116,9 @@ describe('Products Endpoints:', function () { return __awaiter(void 0, void 0, v
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, request
-                                .get('/api/orders/get-user-orders')
-                                .set({ 'x-auth-token': token })];
+                                .get('/api/products/get-by-category')
+                                .set({ 'x-auth-token': token })
+                                .send({ category_name: productInfo.category })];
                         case 1:
                             response = _a.sent();
                             expect(response.status).toEqual(200);
@@ -133,21 +134,6 @@ describe('Products Endpoints:', function () { return __awaiter(void 0, void 0, v
                         case 1:
                             response = _a.sent();
                             productInfo.id = response.body.data[0].id;
-                            expect(response.status).toEqual(200);
-                            return [2 /*return*/];
-                    }
-                });
-            }); });
-            it('Delete products', function () { return __awaiter(void 0, void 0, void 0, function () {
-                var response;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, request
-                                .delete('/api/products/delete')
-                                .set({ 'x-auth-token': token })
-                                .send({ product_id: productInfo.id })];
-                        case 1:
-                            response = _a.sent();
                             expect(response.status).toEqual(200);
                             return [2 /*return*/];
                     }

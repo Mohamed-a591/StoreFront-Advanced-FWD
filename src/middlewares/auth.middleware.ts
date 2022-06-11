@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import validator from '../utils/auth.validator'
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
+import UserModel from '../models/user.model'
 
 dotenv.config()
 
@@ -15,11 +16,14 @@ export const AuthMiddleWare = (req: Request, res: Response, nxt: NextFunction) =
   }
 }
 
-export const permission = (req: Request, res: Response, nxt: NextFunction) => {
+export const permission = async (req: Request, res: Response, nxt: NextFunction) => {
   const token = req.header('x-auth-token')
   try {
-    const decodePayload = jwt.verify(String(token), String(process.env.TOKENSECRT))
-    const payload = jwt.decode(String(token))
+    const User = new UserModel()
+    jwt.verify(String(token), String(process.env.TOKENSECRT))
+    const payload: any = jwt.decode(String(token))
+    const userInfo = await User.selectOne(payload.userid, undefined)
+    if (!userInfo.length) throw Error()
     req.body.jwt_payload = payload
     nxt()
   } catch (error) {

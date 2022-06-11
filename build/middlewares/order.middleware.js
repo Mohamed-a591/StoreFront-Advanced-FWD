@@ -6,13 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderMiddleWare = void 0;
 var order_validator_1 = __importDefault(require("../utils/order.validator"));
 var OrderMiddleWare = function (req, res, nxt) {
-    var token = req.header('x-auth-token');
     try {
-        /**
-         * Get user id from token
-         */
-        // const decodePayload = jwt.decode(String(token))
-        // req.body.jwt_payload = decodePayload
         /**
          * Validate req data
          */

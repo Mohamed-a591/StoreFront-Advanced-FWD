@@ -39,68 +39,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var order_model_1 = __importDefault(require("../../models/order.model"));
-var user_model_1 = __importDefault(require("../../models/user.model"));
-var Order = new order_model_1.default();
-var User = new user_model_1.default();
-describe('Order Model', function () {
-    describe('Test method define', function () {
-        it('Expect methods [index, create, selectByUserId] to be defined', function () {
-            expect(Order.index).toBeDefined();
-            expect(Order.create).toBeDefined();
-            expect(Order.selectByUserId).toBeDefined();
-        });
-    });
-    describe('Order functionalty', function () {
-        var userInfo = {
-            first_name: 'Mohamed',
-            last_name: 'Abdel-Samie',
-            email: 'order@gmail.com',
-            phone: '01111346560',
-            password: 'mo123'
-        };
-        var orderInfo = {
-            id: 1,
-            status: false
-        };
-        beforeAll(function () { return __awaiter(void 0, void 0, void 0, function () {
-            var result;
+var db_config_1 = __importDefault(require("../config/db.config"));
+var Cart = /** @class */ (function () {
+    function Cart() {
+    }
+    Cart.prototype.insert = function (cart) {
+        return __awaiter(this, void 0, void 0, function () {
+            var conn, sql, result, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, User.insertUser(userInfo)];
+                    case 0:
+                        _a.trys.push([0, 3, , 4]);
+                        return [4 /*yield*/, db_config_1.default.connect()];
                     case 1:
-                        _a.sent();
-                        return [4 /*yield*/, User.selectOne(undefined, String(userInfo.email))];
+                        conn = _a.sent();
+                        sql = "INSERT INTO cart(order_id, product_id, qty) VALUES(".concat(cart.order_id, ", ").concat(cart.product_id, ", ").concat(cart.qty, ")");
+                        return [4 /*yield*/, conn.query(sql)];
                     case 2:
                         result = _a.sent();
-                        orderInfo.user_id = result[0].id;
-                        return [2 /*return*/];
+                        conn.release();
+                        return [2 /*return*/, true];
+                    case 3:
+                        error_1 = _a.sent();
+                        throw Error("Insert cart row ".concat(error_1));
+                    case 4: return [2 /*return*/];
                 }
             });
-        }); });
-        it('Create order', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, Order.create(orderInfo)];
-                    case 1:
-                        result = _a.sent();
-                        expect(result).toBeTruthy();
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-        it('Select order by user id', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, Order.selectByUserId(Number(orderInfo.user_id), Number(orderInfo.id))];
-                    case 1:
-                        result = _a.sent();
-                        expect(result).toBeTruthy();
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-    });
-});
+        });
+    };
+    return Cart;
+}());
+exports.default = Cart;

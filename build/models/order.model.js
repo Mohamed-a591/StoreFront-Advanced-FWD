@@ -46,7 +46,7 @@ var Order = /** @class */ (function () {
     /**
      * get all Orders
      */
-    Order.prototype.index = function () {
+    Order.prototype.index = function (user_id) {
         return __awaiter(this, void 0, void 0, function () {
             var conn, sql, result, error_1;
             return __generator(this, function (_a) {
@@ -56,7 +56,7 @@ var Order = /** @class */ (function () {
                         return [4 /*yield*/, db_config_1.default.connect()];
                     case 1:
                         conn = _a.sent();
-                        sql = 'SELECT * FROM orders';
+                        sql = "SELECT * FROM orders WHERE user_id = ".concat(user_id);
                         return [4 /*yield*/, conn.query(sql)];
                     case 2:
                         result = _a.sent();
@@ -75,7 +75,7 @@ var Order = /** @class */ (function () {
      * @param user_id
      * @returns
      */
-    Order.prototype.selectByUserId = function (user_id) {
+    Order.prototype.selectByUserId = function (user_id, order_id) {
         return __awaiter(this, void 0, void 0, function () {
             var conn, sql, result, error_2;
             return __generator(this, function (_a) {
@@ -85,7 +85,7 @@ var Order = /** @class */ (function () {
                         return [4 /*yield*/, db_config_1.default.connect()];
                     case 1:
                         conn = _a.sent();
-                        sql = "SELECT * FROM orders WHERE user_id=".concat(user_id);
+                        sql = "SELECT users.id as user_id, orders.id as order_id, products.name as product_name, products.price, cart.qty  FROM  users  JOIN orders ON users.id = orders.user_id JOIN cart ON orders.id = cart.order_id JOIN products ON cart.product_id = products.id  WHERE users.id = ".concat(user_id, " AND orders.id = ").concat(order_id, ";");
                         return [4 /*yield*/, conn.query(sql)];
                     case 2:
                         result = _a.sent();
@@ -109,20 +109,24 @@ var Order = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 3, , 4]);
+                        _a.trys.push([0, 4, , 5]);
                         return [4 /*yield*/, db_config_1.default.connect()];
                     case 1:
                         conn = _a.sent();
-                        sql = "INSERT INTO orders (products_id, status, user_id) VALUES ('{".concat(order.products_id, "}' , ").concat(order.status, ", ").concat(order.user_id, ")");
+                        sql = "INSERT INTO orders (status, user_id) VALUES (".concat(order.status, ", ").concat(order.user_id, ")");
                         return [4 /*yield*/, conn.query(sql)];
                     case 2:
+                        _a.sent();
+                        sql = "SELECT id from orders ORDER BY id DESC LIMIT 1;";
+                        return [4 /*yield*/, conn.query(sql)];
+                    case 3:
                         result = _a.sent();
                         conn.release();
-                        return [2 /*return*/, result ? true : false];
-                    case 3:
+                        return [2 /*return*/, result.rows];
+                    case 4:
                         error_3 = _a.sent();
                         throw new Error("Connot get orders ".concat(error_3));
-                    case 4: return [2 /*return*/];
+                    case 5: return [2 /*return*/];
                 }
             });
         });

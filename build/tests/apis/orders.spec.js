@@ -41,12 +41,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var supertest_1 = __importDefault(require("supertest"));
 var index_1 = __importDefault(require("../../index"));
+var order_model_1 = __importDefault(require("../../models/order.model"));
+var product_model_1 = __importDefault(require("../../models/product.model"));
 var user_model_1 = __importDefault(require("../../models/user.model"));
 // create a request object
 var request = (0, supertest_1.default)(index_1.default);
 var User = new user_model_1.default();
+var Product = new product_model_1.default();
+var Order = new order_model_1.default();
 describe('Orders Endpoints:', function () { return __awaiter(void 0, void 0, void 0, function () {
-    var token, userData;
+    var token, userData, product, orderInfo, productsInfo;
     return __generator(this, function (_a) {
         token = '';
         userData = {
@@ -56,31 +60,60 @@ describe('Orders Endpoints:', function () { return __awaiter(void 0, void 0, voi
             phone: '0111111111',
             password: 'storefront1234'
         };
+        product = {
+            name: 'Product name',
+            category: 'Cat name',
+            price: 3000,
+            qty: 20
+        };
+        orderInfo = {
+            id: 0,
+            status: false
+        };
+        productsInfo = {
+            products: [
+                {
+                    id: 0,
+                    qty: 10
+                }
+            ],
+            status: true
+        };
         beforeAll(function () { return __awaiter(void 0, void 0, void 0, function () {
-            var result, response;
+            var result, response, allProducts, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, request.post('/api/register').send(userData)];
+                    case 0:
+                        _a.trys.push([0, 6, , 7]);
+                        return [4 /*yield*/, request.post('/api/register').send(userData)];
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, User.selectOne(undefined, String(userData.email))];
                     case 2:
                         result = _a.sent();
                         userData.id = result[0].id;
+                        orderInfo.user_id = result[0].id;
                         return [4 /*yield*/, request.post('/api/login').send(userData)];
                     case 3:
                         response = _a.sent();
                         token = response.header['x-auth-token'];
-                        return [2 /*return*/];
+                        return [4 /*yield*/, Product.create(product)];
+                    case 4:
+                        _a.sent();
+                        return [4 /*yield*/, Product.index()];
+                    case 5:
+                        allProducts = _a.sent();
+                        product.id = allProducts[allProducts.length - 1].id;
+                        productsInfo.products[0].id = Number(product.id);
+                        return [3 /*break*/, 7];
+                    case 6:
+                        error_1 = _a.sent();
+                        throw new Error('Error throw setup function');
+                    case 7: return [2 /*return*/];
                 }
             });
         }); });
         describe('Order apis', function () {
-            var orderInfo = {
-                products_id: [1, 2, 3],
-                status: false,
-                user_id: userData.id
-            };
             it('Cheeck authintication', function () { return __awaiter(void 0, void 0, void 0, function () {
                 var response;
                 return __generator(this, function (_a) {
@@ -94,27 +127,34 @@ describe('Orders Endpoints:', function () { return __awaiter(void 0, void 0, voi
                 });
             }); });
             it('Create order', function () { return __awaiter(void 0, void 0, void 0, function () {
-                var response;
+                var response, createOrder;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, request
                                 .post('/api/orders/add')
                                 .set({ 'x-auth-token': token })
-                                .send(orderInfo)];
+                                .send(productsInfo)];
                         case 1:
                             response = _a.sent();
+                            return [4 /*yield*/, Order.index(Number(userData.id))];
+                        case 2:
+                            createOrder = _a.sent();
+                            orderInfo.id = createOrder[0].id;
                             expect(response.status).toEqual(200);
                             return [2 /*return*/];
                     }
                 });
             }); });
             it('Get order by user id', function () { return __awaiter(void 0, void 0, void 0, function () {
-                var response;
+                var order_id, response;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0: return [4 /*yield*/, request
-                                .get('/api/orders/get-user-orders')
-                                .set({ 'x-auth-token': token })];
+                        case 0:
+                            order_id = orderInfo.id;
+                            return [4 /*yield*/, request
+                                    .get('/api/orders/get-user-orders')
+                                    .set({ 'x-auth-token': token })
+                                    .send({ order_id: order_id })];
                         case 1:
                             response = _a.sent();
                             expect(response.status).toEqual(200);

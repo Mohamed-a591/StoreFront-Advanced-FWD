@@ -52,8 +52,9 @@ describe('Products Endpoints:', async () => {
 
     it('Get products by category', async () => {
       const response = await request
-        .get('/api/orders/get-user-orders')
+        .get('/api/products/get-by-category')
         .set({ 'x-auth-token': token })
+        .send({ category_name: productInfo.category })
 
       expect(response.status).toEqual(200)
     })
@@ -61,15 +62,6 @@ describe('Products Endpoints:', async () => {
     it('Get all products', async () => {
       const response = await request.get('/api/products').set({ 'x-auth-token': token })
       productInfo.id = response.body.data[0].id
-
-      expect(response.status).toEqual(200)
-    })
-
-    it('Delete products', async () => {
-      const response = await request
-        .delete('/api/products/delete')
-        .set({ 'x-auth-token': token })
-        .send({ product_id: productInfo.id })
 
       expect(response.status).toEqual(200)
     })

@@ -25,7 +25,6 @@ describe('Order Model', () => {
 
     const orderInfo: OrderCol = {
       id: 1,
-      products_id: [1, 2, 3],
       status: false
     }
 
@@ -41,7 +40,7 @@ describe('Order Model', () => {
     })
 
     it('Select order by user id', async () => {
-      const result = await Order.selectByUserId(Number(orderInfo.user_id))
+      const result = await Order.selectByUserId(Number(orderInfo.user_id), Number(orderInfo.id))
       expect(result).toBeTruthy()
     })
   })
